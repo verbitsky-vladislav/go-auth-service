@@ -1,0 +1,18 @@
+{
+  "prefix" : null,
+  "packageName" : null,
+  "api" : null,
+  "service" : null,
+  "model" : null,
+  "enableJsonTag" : false,
+  "enableFormTag" : false,
+  "enableHumpTag" : false,
+  "enableSqlNull" : false,
+  "enableGormTag" : false,
+  "enableCommonResult" : true,
+  "pathPrefix" : "",
+  "boxApi" : false,
+  "boxService" : false,
+  "boxModel" : false,
+  "url" : "http://localhost:8080"
+}
