@@ -8,8 +8,15 @@ import (
 )
 
 type application struct {
-	PORT string `envconfig:"APP_PORT" required:"true"`
-	URL  string `envconfig:"APP_URL" required:"true"`
+	PORT                    string `envconfig:"APP_PORT" required:"true"`
+	URL                     string `envconfig:"APP_URL" required:"true"`
+	VERIFICATION_PASSPHRASE string `envconfig:"APP_VERIFICATION_PASSPHRASE" required:"true"`
+}
+
+type jwt struct {
+	ACCESS_LIFE_TIME  int    `envconfig:"JWT_ACCESS_LIFE_TIME" required:"true"`
+	REFRESH_LIFE_TIME int    `envconfig:"JWT_REFRESH_LIFE_TIME" required:"true"`
+	SECRET_KEY        string `envconfig:"JWT_SECRET_KEY" required:"true"`
 }
 
 type database struct {
@@ -33,6 +40,7 @@ type mailer struct {
 
 type Config struct {
 	Application application
+	Jwt         jwt
 	Database    database
 	Redis       redis
 	Mailer      mailer

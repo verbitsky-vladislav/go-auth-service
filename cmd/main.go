@@ -3,9 +3,11 @@ package main
 import (
 	"auth-microservice/internal/config"
 	"auth-microservice/internal/repository/postgres"
+	"auth-microservice/internal/service/auth"
 	"auth-microservice/internal/service/cache"
 	"auth-microservice/internal/service/user"
 	"auth-microservice/internal/transport/handler"
+	"auth-microservice/internal/utils/verification"
 	"auth-microservice/pkg/logger"
 	"auth-microservice/pkg/mailer"
 	"github.com/gin-gonic/gin"
@@ -26,7 +28,7 @@ func main() {
 		logger.Panic(err, "failed to connect to database")
 	}
 
-	redisClient, err := cache.NewRedisClient(
+	redisClient, err := cache.NewRedisCache(
 		cfg.Redis.HOST+":"+cfg.Redis.PORT,
 		cfg.Redis.PASSWORD,
 		0,
@@ -39,8 +41,14 @@ func main() {
 
 	mailerService := mailer.NewMailer(cfg.Mailer.USERNAME, cfg.Mailer.PASSWORD)
 	userService := user.NewUserService(userRepo)
-	logger.Info(userService)
-	logger.Info(mailerService)
+	verificationService := verification.NewVerificationService(cfg)
+	authService := auth.NewAuthService(
+		userService,
+		redisClient,
+		mailerService,
+		verificationService,
+	)
+	logger.Info(authService)
 
 	_, s := handler.NewHandler()
 	router := gin.Default()

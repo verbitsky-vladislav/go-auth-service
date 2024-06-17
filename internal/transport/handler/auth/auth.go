@@ -23,22 +23,22 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	userId, err := h.userService.CreateUser(userCreate)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, model.ErrorResponse{
-			Error: model.Error{
-				Timestamp: timestamppb.Now().String(),
-				Status:    http.StatusBadRequest,
-				Error:     "Bad request",
-				Message:   err.Error(),
-			},
-		})
-		return
-	}
-
-	c.JSON(http.StatusCreated, model.BrandSuccessResponse{
-		Status:  "success",
-		ID:      brandID,
-		Message: "Brand successfully created",
-	})
+	//userId, err := h.userService.CreateUser(userCreate)
+	//if err != nil {
+	//	c.JSON(http.StatusBadRequest, model.ErrorResponse{
+	//		Error: model.Error{
+	//			Timestamp: timestamppb.Now().String(),
+	//			Status:    http.StatusBadRequest,
+	//			Error:     "Bad request",
+	//			Message:   err.Error(),
+	//		},
+	//	})
+	//	return
+	//}
+	//
+	//c.JSON(http.StatusCreated, model.BrandSuccessResponse{
+	//	Status:  "success",
+	//	ID:      brandID,
+	//	Message: "Brand successfully created",
+	//})
 }

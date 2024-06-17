@@ -2,6 +2,7 @@ package service
 
 import (
 	"auth-microservice/internal/model"
+	"auth-microservice/internal/utils/jwt"
 	"time"
 )
 
@@ -12,13 +13,19 @@ type UserService interface {
 	FindUserByEmail(id string) (*model.User, error)
 }
 
-// MailerService added from pkg/mailer
 type MailerService interface {
 	SendMail(dest []string, subject, bodyMessage string) error
 	SendVerificationUrl(dest []string, username, verificationUrl string) error
 	WriteEmail(dest []string, contentType, subject, bodyMessage string) (string, error)
 	WriteHTMLEmail(dest []string, subject, bodyMessage string) (string, error)
 	WritePlainEmail(dest []string, subject, bodyMessage string) (string, error)
+}
+
+type JwtService interface {
+	GenerateTokens(user model.UserInfo) (jwt.Tokens, error)
+	VerifyAccessToken(tokenString string) (model.UserInfo, error)
+	GenerateRefreshToken() (string, error)
+	VerifyRefreshToken(tokenString string) error
 }
 
 type CacheService interface {
@@ -29,6 +36,6 @@ type CacheService interface {
 
 type AuthService interface {
 	Register(user *model.UserCreate) (string, error)
-	Login() error
+	Login(user *model.UserLogin) error
 	Logout() error
 }
