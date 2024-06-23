@@ -5,33 +5,41 @@ import (
 	"auth-microservice/internal/service"
 	"auth-microservice/internal/transport/handler/auth"
 	"auth-microservice/internal/transport/handler/common/middleware"
+	"auth-microservice/internal/transport/handler/social/google"
 	"auth-microservice/internal/utils/jwt"
 	"github.com/gin-gonic/gin"
 )
 
 type Services struct {
-	cfg         *config.Config
-	userService service.UserService
-	authService service.AuthService
+	cfg           *config.Config
+	userService   service.UserService
+	authService   service.AuthService
+	googleService service.GoogleService
+	jwtService    service.JwtService
 }
 
 type Handlers struct {
-	cfg         *config.Config
-	authHandler auth.Handler
+	cfg           *config.Config
+	authHandler   auth.Handler
+	googleHandler google.Handler
 }
 
 func NewHandler(
 	cfg *config.Config,
 	userService service.UserService,
 	authService service.AuthService,
+	googleService service.GoogleService,
+	jwtService service.JwtService,
 ) (*Services, *Handlers) {
 	return &Services{
-			cfg:         cfg,
-			userService: userService,
-			authService: authService,
+			cfg:           cfg,
+			userService:   userService,
+			authService:   authService,
+			googleService: googleService,
 		}, &Handlers{
-			cfg:         cfg,
-			authHandler: *auth.NewAuthHandler(cfg, userService, authService),
+			cfg:           cfg,
+			authHandler:   *auth.NewAuthHandler(cfg, userService, authService),
+			googleHandler: *google.NewGoogleHandler(cfg, googleService, userService, jwtService),
 		}
 }
 
@@ -54,13 +62,17 @@ func (h *Handlers) RegisterRoutes(router *gin.Engine) {
 	//	otpRouter.POST("/verify")
 	//}
 	//
-	//socialRouter := router.Group("/api/auth/social")
-	//{
-	//	socialRouter.GET("/facebook")
-	//	socialRouter.GET("/instagram")
-	//	socialRouter.GET("/git")
-	//	socialRouter.GET("/google")
-	//}
+	socialRouter := router.Group("/api/google")
+	{
+		//googleRouter := socialRouter.Group("google")
+		//{
+		socialRouter.GET("login", h.googleHandler.GoogleLogin)
+		socialRouter.GET("callback", h.googleHandler.GoogleCallback)
+		//}
+		//socialRouter.GET("/instagram")
+		//socialRouter.GET("/git")
+		//socialRouter.GET("/google")
+	}
 	//
 	//secureRouter := router.Group("/api/secure")
 	//{

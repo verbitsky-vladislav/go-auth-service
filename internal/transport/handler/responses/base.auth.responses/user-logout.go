@@ -1,4 +1,4 @@
-package responses
+package base_auth_responses
 
 type LogoutUserResponse struct {
 	Status  int    `json:"status"`

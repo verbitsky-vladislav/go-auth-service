@@ -32,6 +32,25 @@ func (r *UserRepository) Create(user *model.UserCreate) (string, error) {
 	return id, nil
 }
 
+type UserCreateFromGoogle struct {
+	Id         string `json:"id" db:"id"`
+	Username   string `json:"username" db:"username"`
+	Email      string `json:"email" db:"email"`
+	IsVerified bool   `json:"is_verified" db:"is_verified"`
+	Logo       string `json:"logo" db:"logo"`
+}
+
+func (r *UserRepository) CreateFromGoogle(user *model.UserCreateFromGoogle) (string, error) {
+	query := `INSERT INTO users (id, email, username, is_verified, logo, created_at) 
+	          VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	var id string
+	err := r.db.QueryRow(query, user.Id, user.Email, user.Username, user.IsVerified, user.Logo, time.Now()).Scan(&id)
+	if err != nil {
+		return "", logger.Error(err, "failed to create user")
+	}
+	return id, nil
+}
+
 func (r *UserRepository) Update(id string, user *model.UserUpdate) error {
 	query := "UPDATE users SET"
 	params := make([]interface{}, 0)

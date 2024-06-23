@@ -3,7 +3,7 @@ package auth
 import (
 	"auth-microservice/internal/model"
 	"auth-microservice/internal/transport/handler/errors"
-	"auth-microservice/internal/transport/handler/responses"
+	"auth-microservice/internal/transport/handler/responses/base.auth.responses"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"net/http"
@@ -17,7 +17,7 @@ import (
 // @Accept json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {object} responses.UserMyResponse "User information"
+// @Success 200 {object} base_auth_responses.UserMyResponse "User information"
 // @Failure 401 {object} errors.ErrorResponse "Unauthorized"
 // @Failure 403 {object} errors.ErrorResponse "Forbidden"
 // @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
@@ -62,7 +62,7 @@ func (h *Handler) My(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, responses.UserMyResponse{
+	c.JSON(http.StatusOK, base_auth_responses.UserMyResponse{
 		UserInfo: user,
 		Message:  "user info successfully retrieved",
 		Status:   http.StatusOK,

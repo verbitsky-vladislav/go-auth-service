@@ -5,6 +5,7 @@ import (
 	"auth-microservice/internal/config"
 	"auth-microservice/internal/repository/postgres"
 	"auth-microservice/internal/service/auth"
+	"auth-microservice/internal/service/auth/social/google"
 	"auth-microservice/internal/service/cache"
 	"auth-microservice/internal/service/user"
 	"auth-microservice/internal/transport/handler"
@@ -12,6 +13,7 @@ import (
 	"auth-microservice/internal/utils/verification"
 	"auth-microservice/pkg/logger"
 	"auth-microservice/pkg/mailer"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -54,14 +56,26 @@ func main() {
 		verificationService,
 		jwtService,
 	)
-	logger.Info(authService)
+	googleService := google.NewGoogleService(cfg, userService)
 
 	_, s := handler.NewHandler(
 		cfg,
 		userService,
 		authService,
+		googleService,
+		jwtService,
 	)
 	router := gin.Default()
+
+	//router.Use(middleware.CORSMiddleware())
+	// CORS middleware configuration
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5050", "http://localhost:8080"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

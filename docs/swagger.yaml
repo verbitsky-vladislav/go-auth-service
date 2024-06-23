@@ -1,4 +1,31 @@
 definitions:
+  base_auth_responses.CreateUserResponse:
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  base_auth_responses.UserLoginResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+      user_info:
+        $ref: '#/definitions/model.UserInfo'
+    type: object
+  base_auth_responses.UserMyResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
   errors.Error:
     properties:
       error:
@@ -63,33 +90,6 @@ definitions:
       password:
         type: string
     type: object
-  responses.CreateUserResponse:
-    properties:
-      id:
-        type: string
-      message:
-        type: string
-      status:
-        type: integer
-    type: object
-  responses.UserLoginResponse:
-    properties:
-      message:
-        type: string
-      status:
-        type: integer
-      user_info:
-        $ref: '#/definitions/model.UserInfo'
-    type: object
-  responses.UserMyResponse:
-    properties:
-      message:
-        type: string
-      status:
-        type: integer
-      user:
-        $ref: '#/definitions/model.User'
-    type: object
 info:
   contact: {}
 paths:
@@ -111,7 +111,7 @@ paths:
         "200":
           description: Successfully logged in user
           schema:
-            $ref: '#/definitions/responses.UserLoginResponse'
+            $ref: '#/definitions/base_auth_responses.UserLoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -142,7 +142,7 @@ paths:
         "200":
           description: User information
           schema:
-            $ref: '#/definitions/responses.UserMyResponse'
+            $ref: '#/definitions/base_auth_responses.UserMyResponse'
         "401":
           description: Unauthorized
           schema:
@@ -178,7 +178,7 @@ paths:
         "201":
           description: Successfully registered user
           schema:
-            $ref: '#/definitions/responses.CreateUserResponse'
+            $ref: '#/definitions/base_auth_responses.CreateUserResponse'
         "400":
           description: Bad Request
           schema:
@@ -188,6 +188,49 @@ paths:
           schema:
             $ref: '#/definitions/errors.ErrorResponse'
       summary: Register a new user
+      tags:
+      - auth
+  /api/google/callback:
+    get:
+      description: Handles the callback from Google OAuth2
+      parameters:
+      - description: State
+        in: query
+        name: state
+        required: true
+        type: string
+      - description: Authorization Code
+        in: query
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: User data from Google
+          schema:
+            type: string
+        "400":
+          description: States don't Match!!
+          schema:
+            type: string
+        "500":
+          description: Code-Token Exchange Failed" or "User Data Fetch Failed" or
+            "JSON Parsing Failed
+          schema:
+            type: string
+      summary: Google OAuth2 Callback
+      tags:
+      - auth
+  /api/google/login:
+    get:
+      description: Initiates Google OAuth2 login by redirecting to Google's consent
+        page
+      responses:
+        "303":
+          description: Redirect to Google
+          schema:
+            type: string
+      summary: Google OAuth2 Login
       tags:
       - auth
 swagger: "2.0"

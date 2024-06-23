@@ -43,7 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully logged in user",
                         "schema": {
-                            "$ref": "#/definitions/responses.UserLoginResponse"
+                            "$ref": "#/definitions/base_auth_responses.UserLoginResponse"
                         }
                     },
                     "400": {
@@ -95,7 +95,7 @@ const docTemplate = `{
                     "200": {
                         "description": "User information",
                         "schema": {
-                            "$ref": "#/definitions/responses.UserMyResponse"
+                            "$ref": "#/definitions/base_auth_responses.UserMyResponse"
                         }
                     },
                     "401": {
@@ -147,7 +147,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Successfully registered user",
                         "schema": {
-                            "$ref": "#/definitions/responses.CreateUserResponse"
+                            "$ref": "#/definitions/base_auth_responses.CreateUserResponse"
                         }
                     },
                     "400": {
@@ -164,9 +164,113 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/google/callback": {
+            "get": {
+                "description": "Handles the callback from Google OAuth2",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Google OAuth2 Callback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "State",
+                        "name": "state",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization Code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User data from Google",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "States don't Match!!",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Code-Token Exchange Failed\" or \"User Data Fetch Failed\" or \"JSON Parsing Failed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/google/login": {
+            "get": {
+                "description": "Initiates Google OAuth2 login by redirecting to Google's consent page",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Google OAuth2 Login",
+                "responses": {
+                    "303": {
+                        "description": "Redirect to Google",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "base_auth_responses.CreateUserResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "base_auth_responses.UserLoginResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "user_info": {
+                    "$ref": "#/definitions/model.UserInfo"
+                }
+            }
+        },
+        "base_auth_responses.UserMyResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                }
+            }
+        },
         "errors.Error": {
             "type": "object",
             "properties": {
@@ -263,48 +367,6 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
-                }
-            }
-        },
-        "responses.CreateUserResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                }
-            }
-        },
-        "responses.UserLoginResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "user_info": {
-                    "$ref": "#/definitions/model.UserInfo"
-                }
-            }
-        },
-        "responses.UserMyResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "user": {
-                    "$ref": "#/definitions/model.User"
                 }
             }
         }

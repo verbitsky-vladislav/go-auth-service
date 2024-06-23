@@ -1,4 +1,4 @@
-package responses
+package base_auth_responses
 
 import "auth-microservice/internal/model"
 

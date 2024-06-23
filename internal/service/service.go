@@ -2,11 +2,13 @@ package service
 
 import (
 	"auth-microservice/internal/model"
+	"golang.org/x/oauth2"
 	"time"
 )
 
 type UserService interface {
 	CreateUser(user *model.UserCreate) (string, error)
+	CreateUserFromGoogle(user *model.UserCreateFromGoogle) (string, error)
 	UpdateUser(id string, user *model.UserUpdate) error
 	FindUserById(id string) (*model.User, error)
 	FindUserByEmail(id string) (*model.User, error)
@@ -41,4 +43,8 @@ type AuthService interface {
 
 	ConfirmEmail(token string) (*model.UserInfo, error)
 	SendVerificationEmail(info *model.UserInfo) error
+}
+
+type GoogleService interface {
+	GetGoogleConfig() *oauth2.Config
 }

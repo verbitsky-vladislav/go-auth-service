@@ -21,6 +21,12 @@ type jwt struct {
 	SECRET_KEY        string `envconfig:"JWT_SECRET_KEY" required:"true"`
 }
 
+type google struct {
+	REDIRECT_URL  string `envconfig:"GOOGLE_REDIRECT_URL" required:"true"`
+	CLIENT_ID     string `envconfig:"GOOGLE_CLIENT_ID" required:"true"`
+	CLIENT_SECRET string `envconfig:"GOOGLE_CLIENT_SECRET" required:"true"`
+}
+
 type database struct {
 	PORT     string `envconfig:"POSTGRES_PORT_EXTERNAL" required:"true"`
 	HOST     string `envconfig:"POSTGRES_HOST" required:"true"`
@@ -43,6 +49,7 @@ type mailer struct {
 type Config struct {
 	Application application
 	Jwt         jwt
+	Google      google
 	Database    database
 	Redis       redis
 	Mailer      mailer

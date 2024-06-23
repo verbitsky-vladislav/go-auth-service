@@ -21,10 +21,29 @@ type UserCreate struct {
 	Password string `json:"password" db:"password"`
 }
 
+type UserCreateFromGoogle struct {
+	Id         string `json:"id" db:"id"`
+	Username   string `json:"username" db:"username"`
+	Email      string `json:"email" db:"email"`
+	IsVerified bool   `json:"is_verified" db:"is_verified"`
+	Logo       string `json:"logo" db:"logo"`
+}
+
 type UserUpdate struct {
 	Username         string `json:"username" db:"username"`
 	Email            string `json:"email" db:"email"`
 	Phone            string `json:"phone" db:"phone"`
 	GoogleAuthSecret string `json:"google_auth_secret" db:"google_auth_secret"`
 	IsVerified       bool   `json:"is_verified" db:"is_verified"`
+}
+
+type UserGoogleInfo struct {
+	Id            string `json:"id"`
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	Name          string `json:"name"`
+	GivenName     string `json:"given_name"`
+	FamilyName    string `json:"family_name"`
+	Picture       string `json:"picture"`
+	Locale        string `json:"locale"`
 }

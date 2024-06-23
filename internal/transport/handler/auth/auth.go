@@ -3,7 +3,7 @@ package auth
 import (
 	"auth-microservice/internal/model"
 	"auth-microservice/internal/transport/handler/errors"
-	"auth-microservice/internal/transport/handler/responses"
+	"auth-microservice/internal/transport/handler/responses/base.auth.responses"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"net/http"
@@ -17,7 +17,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param userCreate body model.UserCreate true "User registration information"
-// @Success 201 {object} responses.CreateUserResponse "Successfully registered user"
+// @Success 201 {object} base_auth_responses.CreateUserResponse "Successfully registered user"
 // @Failure 400 {object} errors.ErrorResponse "Bad Request"
 // @Failure 500 {object} errors.ErrorResponse "Internal Server Error"
 // @Router /api/auth/register [post]
@@ -48,7 +48,7 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, responses.CreateUserResponse{
+	c.JSON(http.StatusOK, base_auth_responses.CreateUserResponse{
 		Id:      userId,
 		Message: "please check your email for verification",
 		Status:  http.StatusOK,
@@ -63,7 +63,7 @@ func (h *Handler) Register(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param input body model.UserLogin true "User login information"
-// @Success 200 {object} responses.UserLoginResponse "Successfully logged in user"
+// @Success 200 {object} base_auth_responses.UserLoginResponse "Successfully logged in user"
 // @Failure 400 {object} errors.ErrorResponse "Bad Request"
 // @Failure 401 {object} errors.ErrorResponse "Unauthorized"
 // @Failure 403 {object} errors.ErrorResponse "Forbidden"
@@ -121,7 +121,7 @@ func (h *Handler) Login(c *gin.Context) {
 	c.SetCookie("access_token", tokens.AccessToken, h.cfg.Jwt.ACCESS_LIFE_TIME, "/", h.cfg.Application.DOMAIN, true, true)
 	c.SetCookie("refresh_token", tokens.RefreshToken, h.cfg.Jwt.REFRESH_LIFE_TIME, "/", h.cfg.Application.DOMAIN, true, true)
 
-	c.JSON(http.StatusOK, responses.UserLoginResponse{
+	c.JSON(http.StatusOK, base_auth_responses.UserLoginResponse{
 		Status:   http.StatusOK,
 		Message:  "user successfully login",
 		UserInfo: userInfo,
@@ -132,7 +132,7 @@ func (h *Handler) Logout(c *gin.Context) {
 	c.SetCookie("access_token", "", -1, "/", "", true, true)
 	c.SetCookie("refresh_token", "", -1, "/", "", true, true)
 
-	c.JSON(http.StatusOK, responses.LogoutUserResponse{
+	c.JSON(http.StatusOK, base_auth_responses.LogoutUserResponse{
 		Status:  http.StatusOK,
 		Message: "user successfully logout",
 	})
