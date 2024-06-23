@@ -6,6 +6,8 @@ import (
 	"auth-microservice/internal/repository/postgres"
 	"auth-microservice/internal/service/auth"
 	"auth-microservice/internal/service/auth/social/google"
+	"auth-microservice/internal/service/auth/social/vk"
+	"auth-microservice/internal/service/auth/social/yandex"
 	"auth-microservice/internal/service/cache"
 	"auth-microservice/internal/service/user"
 	"auth-microservice/internal/transport/handler"
@@ -57,12 +59,16 @@ func main() {
 		jwtService,
 	)
 	googleService := google.NewGoogleService(cfg, userService)
+	vkService := vk.NewVkService(cfg, userService)
+	yandexService := yandex.NewYandexService(cfg, userService)
 
 	_, s := handler.NewHandler(
 		cfg,
 		userService,
 		authService,
 		googleService,
+		vkService,
+		yandexService,
 		jwtService,
 	)
 	router := gin.Default()

@@ -49,6 +49,23 @@ func (u userService) CreateUserFromGoogle(user *model.UserCreateFromGoogle) (str
 	return id, nil
 }
 
+func (u userService) CreateUserFromYandex(user *model.UserCreateFromYandex) (string, error) {
+	var checkUser *model.User
+	checkUser, err := u.FindUserByEmail(user.DefaultEmail)
+	if err != nil {
+		return "", err
+	}
+	if checkUser != nil {
+		return "", logger.Error(err, "user already exists")
+	}
+
+	id, err := u.userRepo.CreateFromYandex(user)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
 func (u userService) UpdateUser(id string, user *model.UserUpdate) error {
 	err := u.userRepo.Update(id, user)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"auth-microservice/internal/transport/handler/auth"
 	"auth-microservice/internal/transport/handler/common/middleware"
 	"auth-microservice/internal/transport/handler/social/google"
+	"auth-microservice/internal/transport/handler/social/yandex"
 	"auth-microservice/internal/utils/jwt"
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,8 @@ type Services struct {
 	userService   service.UserService
 	authService   service.AuthService
 	googleService service.GoogleService
+	vkService     service.VkService
+	yandexService service.YandexService
 	jwtService    service.JwtService
 }
 
@@ -22,6 +25,8 @@ type Handlers struct {
 	cfg           *config.Config
 	authHandler   auth.Handler
 	googleHandler google.Handler
+	//vkHandler vk.Handler
+	yandexHandler yandex.Handler
 }
 
 func NewHandler(
@@ -29,17 +34,22 @@ func NewHandler(
 	userService service.UserService,
 	authService service.AuthService,
 	googleService service.GoogleService,
+	vkService service.VkService,
+	yandexService service.YandexService,
 	jwtService service.JwtService,
 ) (*Services, *Handlers) {
 	return &Services{
 			cfg:           cfg,
 			userService:   userService,
 			authService:   authService,
+			vkService:     vkService,
+			yandexService: yandexService,
 			googleService: googleService,
 		}, &Handlers{
 			cfg:           cfg,
 			authHandler:   *auth.NewAuthHandler(cfg, userService, authService),
 			googleHandler: *google.NewGoogleHandler(cfg, googleService, userService, jwtService),
+			yandexHandler: *yandex.NewYandexHandler(cfg, yandexService, userService, jwtService),
 		}
 }
 
@@ -62,16 +72,25 @@ func (h *Handlers) RegisterRoutes(router *gin.Engine) {
 	//	otpRouter.POST("/verify")
 	//}
 	//
-	socialRouter := router.Group("/api/google")
+	socialRouter := router.Group("/api/social")
 	{
-		//googleRouter := socialRouter.Group("google")
+		googleRouter := socialRouter.Group("google")
+		{
+			googleRouter.GET("login", h.googleHandler.GoogleLogin)
+			googleRouter.GET("callback", h.googleHandler.GoogleCallback)
+		}
+		//vkRouter := socialRouter.Group("vk")
 		//{
-		socialRouter.GET("login", h.googleHandler.GoogleLogin)
-		socialRouter.GET("callback", h.googleHandler.GoogleCallback)
+		//	vkRouter.GET("login")
+		//	vkRouter.GET("callback")
 		//}
+		yandexRouter := socialRouter.Group("yandex")
+		{
+			yandexRouter.GET("login", h.yandexHandler.YandexLogin)
+			yandexRouter.GET("callback", h.yandexHandler.YandexCallback)
+		}
 		//socialRouter.GET("/instagram")
 		//socialRouter.GET("/git")
-		//socialRouter.GET("/google")
 	}
 	//
 	//secureRouter := router.Group("/api/secure")

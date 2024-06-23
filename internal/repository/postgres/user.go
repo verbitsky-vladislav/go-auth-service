@@ -51,6 +51,17 @@ func (r *UserRepository) CreateFromGoogle(user *model.UserCreateFromGoogle) (str
 	return id, nil
 }
 
+func (r *UserRepository) CreateFromYandex(user *model.UserCreateFromYandex) (string, error) {
+	query := `INSERT INTO users (id, email, username, is_verified, logo, created_at) 
+	          VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	var id string
+	err := r.db.QueryRow(query, user.Id, user.DefaultEmail, user.RealName, user.IsVerified, user.Avatar, time.Now()).Scan(&id)
+	if err != nil {
+		return "", logger.Error(err, "failed to create user")
+	}
+	return id, nil
+}
+
 func (r *UserRepository) Update(id string, user *model.UserUpdate) error {
 	query := "UPDATE users SET"
 	params := make([]interface{}, 0)

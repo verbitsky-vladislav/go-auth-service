@@ -27,6 +27,12 @@ type google struct {
 	CLIENT_SECRET string `envconfig:"GOOGLE_CLIENT_SECRET" required:"true"`
 }
 
+type yandex struct {
+	REDIRECT_URL  string `envconfig:"YANDEX_REDIRECT_URL" required:"true"`
+	CLIENT_ID     string `envconfig:"YANDEX_CLIENT_ID" required:"true"`
+	CLIENT_SECRET string `envconfig:"YANDEX_CLIENT_SECRET" required:"true"`
+}
+
 type database struct {
 	PORT     string `envconfig:"POSTGRES_PORT_EXTERNAL" required:"true"`
 	HOST     string `envconfig:"POSTGRES_HOST" required:"true"`
@@ -50,6 +56,7 @@ type Config struct {
 	Application application
 	Jwt         jwt
 	Google      google
+	Yandex      yandex
 	Database    database
 	Redis       redis
 	Mailer      mailer

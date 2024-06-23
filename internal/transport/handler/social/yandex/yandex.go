@@ -1,14 +1,16 @@
-package google
+package yandex
 
 import (
 	"auth-microservice/internal/config"
 	"auth-microservice/internal/model"
 	"auth-microservice/internal/service"
 	"auth-microservice/internal/transport/handler/errors"
+	"auth-microservice/pkg/logger"
 	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -18,33 +20,33 @@ import (
 
 type Handler struct {
 	cfg           *config.Config
-	googleService service.GoogleService
+	yandexService service.YandexService
 	userService   service.UserService
 	jwtService    service.JwtService
 }
 
-func NewGoogleHandler(
+func NewYandexHandler(
 	cfg *config.Config,
-	googleService service.GoogleService,
+	yandexService service.YandexService,
 	userService service.UserService,
 	jwtService service.JwtService,
 ) *Handler {
 	return &Handler{
 		cfg:           cfg,
-		googleService: googleService,
+		yandexService: yandexService,
 		userService:   userService,
 		jwtService:    jwtService,
 	}
 }
 
-// GoogleLogin godoc
-// @Summary Google OAuth2 Login
-// @Description Initiates Google OAuth2 login by redirecting to Google's consent page
+// YandexLogin godoc
+// @Summary Yandex OAuth2 Login
+// @Description Initiates Yandex OAuth2 login by redirecting to Yandex's consent page
 // @Tags auth
-// @Success 303 {string} string "Redirect to Google"
-// @Router /api/social/google/login [get]
-func (h Handler) GoogleLogin(c *gin.Context) {
-	//todo перенести в отдельный сервис под гугл
+// @Success 303 {string} string "Redirect to Yandex"
+// @Router /api/social/yandex/login [get]
+func (h Handler) YandexLogin(c *gin.Context) {
+	//todo перенести в отдельный сервис под Yandex
 
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
@@ -63,23 +65,22 @@ func (h Handler) GoogleLogin(c *gin.Context) {
 
 	c.SetCookie("oauthstate", state, 3600, "/", "", false, true)
 
-	url := h.googleService.GetGoogleConfig().AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
+	url := h.yandexService.GetYandexConfig().AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
+	logger.Info(url)
 	c.Redirect(http.StatusSeeOther, url)
 }
 
-// GoogleCallback godoc
-// @Summary Google OAuth2 Callback
-// @Description Handles the callback from Google OAuth2
+// YandexCallback godoc
+// @Summary Yandex OAuth2 Callback
+// @Description Handles the callback from Yandex OAuth2
 // @Tags auth
 // @Param state query string true "State"
 // @Param code query string true "Authorization Code"
-// @Success 200 {string} string "User data from Google"
-// @Failure 400 {string} string "States don't Match!!"
+// @Success 200 {string} string "User data from Yandex"
+// @Failure 400 {string} string "States don't Match"
 // @Failure 500 {string} string "Code-Token Exchange Failed" or "User Data Fetch Failed" or "JSON Parsing Failed"
-// @Router /api/social/google/callback [get]
-func (h Handler) GoogleCallback(c *gin.Context) {
-	//todo перенести в отдельный сервис под гугл
-
+// @Router /api/social/yandex/callback [get]
+func (h Handler) YandexCallback(c *gin.Context) {
 	state := c.Query("state")
 	oauthState, err := c.Cookie("oauthstate")
 	if err != nil || state != oauthState {
@@ -95,7 +96,7 @@ func (h Handler) GoogleCallback(c *gin.Context) {
 	}
 
 	code := c.Query("code")
-	token, err := h.googleService.GetGoogleConfig().Exchange(context.Background(), code)
+	token, err := h.yandexService.GetYandexConfig().Exchange(context.Background(), code)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorResponse{
 			Error: errors.Error{
@@ -108,7 +109,7 @@ func (h Handler) GoogleCallback(c *gin.Context) {
 		return
 	}
 
-	resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
+	resp, err := http.Get("https://login.yandex.ru/info?format=json&oauth_token=" + token.AccessToken)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorResponse{
 			Error: errors.Error{
@@ -134,8 +135,7 @@ func (h Handler) GoogleCallback(c *gin.Context) {
 		})
 		return
 	}
-
-	var user model.UserGoogleInfo
+	var user model.UserYandexInfo
 
 	if err := json.Unmarshal(userData, &user); err != nil {
 		c.JSON(http.StatusBadRequest, errors.ErrorResponse{
@@ -149,23 +149,29 @@ func (h Handler) GoogleCallback(c *gin.Context) {
 		return
 	}
 
-	id, err := h.userService.CreateUserFromGoogle(&model.UserCreateFromGoogle{
-		Id:         user.Id,
-		Email:      user.Email,
-		Logo:       user.Picture,
-		Username:   user.Name,
-		IsVerified: true,
+	_, err = h.userService.CreateUserFromYandex(&model.UserCreateFromYandex{
+		Id:           user.Id,
+		RealName:     user.RealName,
+		Avatar:       fmt.Sprintf("https://avatars.yandex.net/get-yapic/"+user.AvatarID+"/islands-200", user.AvatarID),
+		IsVerified:   true,
+		DefaultEmail: user.DefaultEmail,
 	})
 	if err != nil {
-		if err.Error() == "user already exists" {
-
-		}
+		c.JSON(http.StatusInternalServerError, errors.ErrorResponse{
+			Error: errors.Error{
+				Timestamp: timestamppb.Now().String(),
+				Status:    http.StatusInternalServerError,
+				Error:     err.Error(),
+				Message:   "error creating user",
+			},
+		})
+		return
 	}
 
 	userInfo := model.UserInfo{
-		ID:       id,
-		Email:    user.Email,
-		Username: user.Name,
+		ID:       user.Id,
+		Email:    user.DefaultEmail,
+		Username: user.Login,
 	}
 
 	tokens, err := h.jwtService.GenerateTokens(userInfo)
@@ -178,6 +184,7 @@ func (h Handler) GoogleCallback(c *gin.Context) {
 				Message:   "error generating tokens",
 			},
 		})
+		return
 	}
 
 	c.SetCookie("access_token", tokens.AccessToken, h.cfg.Jwt.ACCESS_LIFE_TIME, "/", h.cfg.Application.DOMAIN, true, true)

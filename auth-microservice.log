@@ -89,3 +89,20 @@
   "picture": "https://lh3.googleusercontent.com/a/ACg8ocKRZM4Nw07oETcovgZYC_4aTBzbjBSQimvkXfhs7NN5ajjjyI4=s96-c",
   "locale": ""
 } 
+[92mINFO: [0m2024/06/23 21:25:26 yandex.go:68: https://oauth.yandex.com/authorize?access_type=offline&client_id=5ab75f44b4a9453681cc0e32b98b009c&prompt=consent&redirect_uri=http%3A%2F%2Flocalhost%3A5050%2Fapi%2Fsocial%2Fyandex%2Fcallback&response_type=code&state=9GfRkHQWbHLLHhM48f13BQ%3D%3D 
+[92mINFO: [0m2024/06/23 21:25:31 yandex.go:189: user info: {
+  "id": "728862682",
+  "login": "vlad25verb25",
+  "client_id": "5ab75f44b4a9453681cc0e32b98b009c",
+  "display_name": "Vladislav Verbitsky",
+  "real_name": "Vladislav Verbitsky",
+  "first_name": "Vladislav",
+  "last_name": "Verbitsky",
+  "sex": "male",
+  "default_email": "vlad25verb25@yandex.ru",
+  "emails": [
+    "vlad25verb25@yandex.ru"
+  ],
+  "default_avatar_id": "48449/pNRcJrZcjuFwh9yC9eh8UiJWXo-1",
+  "birthday": ""
+} 

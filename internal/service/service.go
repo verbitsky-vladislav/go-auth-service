@@ -9,6 +9,7 @@ import (
 type UserService interface {
 	CreateUser(user *model.UserCreate) (string, error)
 	CreateUserFromGoogle(user *model.UserCreateFromGoogle) (string, error)
+	CreateUserFromYandex(user *model.UserCreateFromYandex) (string, error)
 	UpdateUser(id string, user *model.UserUpdate) error
 	FindUserById(id string) (*model.User, error)
 	FindUserByEmail(id string) (*model.User, error)
@@ -47,4 +48,12 @@ type AuthService interface {
 
 type GoogleService interface {
 	GetGoogleConfig() *oauth2.Config
+}
+
+type VkService interface {
+	GetVkConfig() *oauth2.Config
+}
+
+type YandexService interface {
+	GetYandexConfig() *oauth2.Config
 }

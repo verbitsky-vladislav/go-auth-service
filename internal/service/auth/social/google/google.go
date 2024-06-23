@@ -8,9 +8,9 @@ import (
 )
 
 type googleService struct {
-	cfg               *config.Config
-	googleOauthConfig *oauth2.Config
-	userService       service.UserService
+	cfg           *config.Config
+	vkOauthConfig *oauth2.Config
+	userService   service.UserService
 }
 
 func NewGoogleService(
@@ -19,7 +19,7 @@ func NewGoogleService(
 ) service.GoogleService {
 	return &googleService{
 		cfg: cfg,
-		googleOauthConfig: &oauth2.Config{
+		vkOauthConfig: &oauth2.Config{
 			RedirectURL:  cfg.Google.REDIRECT_URL,
 			ClientID:     cfg.Google.CLIENT_ID,
 			ClientSecret: cfg.Google.CLIENT_SECRET,
@@ -35,5 +35,5 @@ func NewGoogleService(
 }
 
 func (s *googleService) GetGoogleConfig() *oauth2.Config {
-	return s.googleOauthConfig
+	return s.vkOauthConfig
 }
