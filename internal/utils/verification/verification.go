@@ -7,6 +7,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -32,13 +33,23 @@ func NewVerificationService(
 	}
 }
 
+func (v verificationService) generateKeyFromPassword(password string) ([]byte, error) {
+	hash := sha256.Sum256([]byte(password))
+	return hash[:], nil
+}
+
 func (v verificationService) Encrypt(info model.UserInfo) (string, error) {
 	data, err := json.Marshal(info)
 	if err != nil {
 		return "", logger.Error(err, "failed to marshal info")
 	}
 
-	block, err := aes.NewCipher([]byte(v.cfg.Application.VERIFICATION_PASSPHRASE))
+	key, err := v.generateKeyFromPassword(v.cfg.Application.VERIFICATION_PASSPHRASE)
+	if err != nil {
+		return "", logger.Error(err, "failed to generate key from password")
+	}
+
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", logger.Error(err, "failed to create cipher | block")
 	}
@@ -63,7 +74,12 @@ func (v verificationService) Decrypt(encrypted string) (model.UserInfo, error) {
 		return model.UserInfo{}, logger.Error(err, "failed to decode encrypted data")
 	}
 
-	block, err := aes.NewCipher([]byte(v.cfg.Application.VERIFICATION_PASSPHRASE))
+	key, err := v.generateKeyFromPassword(v.cfg.Application.VERIFICATION_PASSPHRASE)
+	if err != nil {
+		return model.UserInfo{}, logger.Error(err, "failed to generate key from password")
+	}
+
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return model.UserInfo{}, logger.Error(err, "failed to create cipher | block")
 	}

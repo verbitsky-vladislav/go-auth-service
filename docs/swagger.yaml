@@ -1,0 +1,193 @@
+definitions:
+  errors.Error:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+      timestamp:
+        type: string
+    type: object
+  errors.ErrorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/errors.Error'
+    type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      google_auth_secret:
+        type: string
+      id:
+        type: string
+      is_verified:
+        type: boolean
+      password:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserCreate:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserInfo:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+    type: object
+  model.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  responses.CreateUserResponse:
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  responses.UserLoginResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+      user_info:
+        $ref: '#/definitions/model.UserInfo'
+    type: object
+  responses.UserMyResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+info:
+  contact: {}
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Log in a user with email and password.
+      parameters:
+      - description: User login information
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully logged in user
+          schema:
+            $ref: '#/definitions/responses.UserLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      summary: Login user
+      tags:
+      - auth
+  /api/auth/my:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves information about the currently authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information
+          schema:
+            $ref: '#/definitions/responses.UserMyResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get current user information
+      tags:
+      - auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with the provided information.
+      parameters:
+      - description: User registration information
+        in: body
+        name: userCreate
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully registered user
+          schema:
+            $ref: '#/definitions/responses.CreateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+swagger: "2.0"

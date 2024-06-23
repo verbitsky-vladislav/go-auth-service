@@ -1,0 +1,14 @@
+[92mINFO: [0m2024/06/23 15:00:25 [/Users/vladislav/GolandProjects/auth-microservice/cmd/main.go:57] {} 
+[91mERROR: [0m2024/06/23 15:00:34 [ERROR] failed to create user: pq: INSERT has more target columns than expressions
+[92mINFO: [0m2024/06/23 15:01:46 [/Users/vladislav/GolandProjects/auth-microservice/cmd/main.go:57] {} 
+[91mERROR: [0m2024/06/23 15:01:47 [ERROR] failed to create user: pq: INSERT has more target columns than expressions
+[92mINFO: [0m2024/06/23 15:02:57 [/Users/vladislav/GolandProjects/auth-microservice/cmd/main.go:57] {} 
+[91mERROR: [0m2024/06/23 15:03:01 [ERROR] failed to create user: pq: INSERT has more target columns than expressions
+[92mINFO: [0m2024/06/23 15:04:01 [/Users/vladislav/GolandProjects/auth-microservice/cmd/main.go:57] {} 
+[91mERROR: [0m2024/06/23 15:04:14 [ERROR] failed to create cipher | block: crypto/aes: invalid key size 48
+[92mINFO: [0m2024/06/23 15:05:58 [/Users/vladislav/GolandProjects/auth-microservice/cmd/main.go:57] {} 
+[91mERROR: [0m2024/06/23 15:06:02 [ERROR] failed to find user: sql: Scan error on column index 4, name "google_auth_secret": converting NULL to string is unsupported
+[92mINFO: [0m2024/06/23 15:13:01 [/Users/vladislav/GolandProjects/auth-microservice/cmd/main.go:57] {} 
+[91mERROR: [0m2024/06/23 15:13:07 [ERROR] failed to find user: sql: Scan error on column index 4, name "google_auth_secret": converting NULL to string is unsupported
+[92mINFO: [0m2024/06/23 15:16:15 [/Users/vladislav/GolandProjects/auth-microservice/cmd/main.go:57] {} 
+[91mERROR: [0m2024/06/23 15:16:19 [ERROR] failed to find user: scannable dest type ptr with >1 columns (7) in result

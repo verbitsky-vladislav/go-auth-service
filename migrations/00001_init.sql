@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(20) UNIQUE,
     password VARCHAR(64) NOT NULL,
     is_verified BOOLEAN DEFAULT FALSE,
-    google_auth_secret TEXT,
+    google_auth_secret VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

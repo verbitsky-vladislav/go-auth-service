@@ -15,6 +15,7 @@ type authService struct {
 	cacheService        service.CacheService
 	mailerService       service.MailerService
 	verificationService verification.VerificationService
+	jwtService          service.JwtService
 }
 
 func NewAuthService(
@@ -22,12 +23,14 @@ func NewAuthService(
 	cacheService service.CacheService,
 	mailerService service.MailerService,
 	verificationService verification.VerificationService,
+	jwtService service.JwtService,
 ) service.AuthService {
 	return &authService{
 		userService:         userService,
 		cacheService:        cacheService,
 		mailerService:       mailerService,
 		verificationService: verificationService,
+		jwtService:          jwtService,
 	}
 }
 
@@ -55,32 +58,39 @@ func (a authService) Register(user *model.UserCreate) (string, error) {
 	return id, nil
 }
 
-func (a authService) Login(user *model.UserLogin) error {
+func (a authService) Login(user *model.UserLogin) (*model.UserInfo, *model.Tokens, error) {
 	checkUser, err := a.userService.FindUserByEmail(user.Email)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 	if checkUser == nil {
-		return logger.Error(nil, "user not found")
+		return nil, nil, logger.Error(nil, "user not found")
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(checkUser.Password), []byte(user.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(*checkUser.Password), []byte(user.Password))
 	if err != nil {
-		return logger.Error(nil, "incorrect password")
-	}
-	if !checkUser.IsVerified {
-		err = a.SendVerificationEmail(&model.UserInfo{
-			ID:       checkUser.Id,
-			Email:    checkUser.Email,
-			Username: checkUser.Username,
-		})
-		if err != nil {
-			return err
-		}
-		return logger.Error(nil, "user is not verified. verification url was sent on email")
+		return nil, nil, logger.Error(nil, "incorrect password")
 	}
 
-	//todo add jwt
-	return err
+	userInfo := model.UserInfo{
+		ID:       *checkUser.Id,
+		Email:    *checkUser.Email,
+		Username: *checkUser.Username,
+	}
+
+	if !checkUser.IsVerified {
+		err = a.SendVerificationEmail(&userInfo)
+		if err != nil {
+			return nil, nil, err
+		}
+		return nil, nil, logger.Error(nil, "user is not verified. verification url was sent on email")
+	}
+
+	tokens, err := a.jwtService.GenerateTokens(userInfo)
+	if err != nil {
+		return &userInfo, &tokens, err
+	}
+
+	return &userInfo, &tokens, nil
 
 }
 

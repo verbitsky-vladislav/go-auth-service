@@ -22,7 +22,7 @@ var (
 func init() {
 	once.Do(func() {
 		var err error
-		logFile, err = os.OpenFile("river.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		logFile, err = os.OpenFile("auth-microservice.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
 			log.Fatalf("Failed to open log file: %v", err)
 		}

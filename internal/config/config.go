@@ -9,8 +9,10 @@ import (
 
 type application struct {
 	PORT                    string `envconfig:"APP_PORT" required:"true"`
+	DOMAIN                  string `envconfig:"APP_DOMAIN" required:"true"`
 	URL                     string `envconfig:"APP_URL" required:"true"`
 	VERIFICATION_PASSPHRASE string `envconfig:"APP_VERIFICATION_PASSPHRASE" required:"true"`
+	FRONTEND_URL            string `envconfig:"APP_FRONTEND_URL" required:"true"`
 }
 
 type jwt struct {

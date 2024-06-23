@@ -22,15 +22,13 @@ services:
     ports:
       - "${REDIS_EXTERNAL_PORT}:${REDIS_INTERNAL_PORT}"
     volumes:
-      - redis_data:/data
+      - auth-redis:/data
     restart: always
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
       timeout: 10s
       retries: 5
-    networks:
-      - mmco-network
 
 volumes:
   auth-postgres:

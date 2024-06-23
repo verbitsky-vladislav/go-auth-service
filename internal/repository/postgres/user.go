@@ -3,6 +3,7 @@ package postgres
 import (
 	"auth-microservice/internal/model"
 	"auth-microservice/pkg/logger"
+	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
 	"strconv"
@@ -21,10 +22,10 @@ func NewUserRepository(db *sqlx.DB) *UserRepository {
 }
 
 func (r *UserRepository) Create(user *model.UserCreate) (string, error) {
-	query := `INSERT INTO users (email, phone, password) 
-	          VALUES ($1, $2, $3) RETURNING id`
+	query := `INSERT INTO users (email, phone, password, username, created_at) 
+	          VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	var id string
-	err := r.db.QueryRow(query, user.Email, user.Phone, user.Password, time.Now()).Scan(&id)
+	err := r.db.QueryRow(query, user.Email, user.Phone, user.Password, user.Username, time.Now()).Scan(&id)
 	if err != nil {
 		return "", logger.Error(err, "failed to create user")
 	}
@@ -80,10 +81,12 @@ func (r *UserRepository) Update(id string, user *model.UserUpdate) error {
 
 func (r *UserRepository) FindById(id string) (*model.User, error) {
 	var user model.User
-	query := `SELECT id, email, phone, is_verified, google_auth_secret, created_at, updated_at 
-	          FROM users WHERE id = $1`
+	query := `SELECT * FROM users WHERE id = $1`
 	err := r.db.Get(&user, query, id)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, logger.Error(err, "failed to find user")
 	}
 	return &user, nil
@@ -91,10 +94,12 @@ func (r *UserRepository) FindById(id string) (*model.User, error) {
 
 func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 	var user model.User
-	query := `SELECT id, email, phone, is_verified, google_auth_secret, created_at, updated_at 
-	          FROM users WHERE email = $1`
+	query := `SELECT * FROM users WHERE email = $1`
 	err := r.db.Get(&user, query, email)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, logger.Error(err, "failed to find user")
 	}
 	return &user, nil

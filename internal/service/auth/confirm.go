@@ -6,29 +6,29 @@ import (
 	"auth-microservice/pkg/logger"
 )
 
-func (a authService) ConfirmEmail(token string) error {
+func (a authService) ConfirmEmail(token string) (*model.UserInfo, error) {
 	userInfo, err := a.verificationService.Decrypt(token)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	cacheToken, err := a.cacheService.Get(userInfo.ID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result := a.verificationService.CompareTokens(token, cacheToken)
 	if !result {
-		return logger.Error(nil, "tokens don't match")
+		return nil, logger.Error(nil, "tokens don't match")
 	}
 
 	err = a.userService.UpdateUser(userInfo.ID, &model.UserUpdate{
 		IsVerified: result,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &userInfo, nil
 }
 
 func (a authService) SendVerificationEmail(info *model.UserInfo) error {
