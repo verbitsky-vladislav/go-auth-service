@@ -154,7 +154,7 @@
                 }
             }
         },
-        "/api/google/callback": {
+        "/api/social/google/callback": {
             "get": {
                 "description": "Handles the callback from Google OAuth2",
                 "tags": [
@@ -199,7 +199,7 @@
                 }
             }
         },
-        "/api/google/login": {
+        "/api/social/google/login": {
             "get": {
                 "description": "Initiates Google OAuth2 login by redirecting to Google's consent page",
                 "tags": [
@@ -209,6 +209,68 @@
                 "responses": {
                     "303": {
                         "description": "Redirect to Google",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/social/yandex/callback": {
+            "get": {
+                "description": "Handles the callback from Yandex OAuth2",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Yandex OAuth2 Callback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "State",
+                        "name": "state",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization Code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User data from Yandex",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "States don't Match",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Code-Token Exchange Failed\" or \"User Data Fetch Failed\" or \"JSON Parsing Failed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/social/yandex/login": {
+            "get": {
+                "description": "Initiates Yandex OAuth2 login by redirecting to Yandex's consent page",
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Yandex OAuth2 Login",
+                "responses": {
+                    "303": {
+                        "description": "Redirect to Yandex",
                         "schema": {
                             "type": "string"
                         }

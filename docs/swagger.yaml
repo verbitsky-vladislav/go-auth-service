@@ -190,7 +190,7 @@ paths:
       summary: Register a new user
       tags:
       - auth
-  /api/google/callback:
+  /api/social/google/callback:
     get:
       description: Handles the callback from Google OAuth2
       parameters:
@@ -221,7 +221,7 @@ paths:
       summary: Google OAuth2 Callback
       tags:
       - auth
-  /api/google/login:
+  /api/social/google/login:
     get:
       description: Initiates Google OAuth2 login by redirecting to Google's consent
         page
@@ -231,6 +231,49 @@ paths:
           schema:
             type: string
       summary: Google OAuth2 Login
+      tags:
+      - auth
+  /api/social/yandex/callback:
+    get:
+      description: Handles the callback from Yandex OAuth2
+      parameters:
+      - description: State
+        in: query
+        name: state
+        required: true
+        type: string
+      - description: Authorization Code
+        in: query
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: User data from Yandex
+          schema:
+            type: string
+        "400":
+          description: States don't Match
+          schema:
+            type: string
+        "500":
+          description: Code-Token Exchange Failed" or "User Data Fetch Failed" or
+            "JSON Parsing Failed
+          schema:
+            type: string
+      summary: Yandex OAuth2 Callback
+      tags:
+      - auth
+  /api/social/yandex/login:
+    get:
+      description: Initiates Yandex OAuth2 login by redirecting to Yandex's consent
+        page
+      responses:
+        "303":
+          description: Redirect to Yandex
+          schema:
+            type: string
+      summary: Yandex OAuth2 Login
       tags:
       - auth
 swagger: "2.0"

@@ -7,6 +7,16 @@ import (
 	"net/http"
 )
 
+// Confirm godoc
+// @Summary      Confirm email verification
+// @Description  Confirms a user's email using a verification token
+// @Tags         Authentication
+// @Accept       json
+// @Produce      json
+// @Param        verification_token  path      string  true  "Verification Token"
+// @Success      302  {string}       string    "Redirect to frontend URL on success"
+// @Failure      400  {object}       errors.ErrorResponse  "Verification token invalid"
+// @Router       /confirm/verify/{verification_token} [get]
 func (h *Handler) Confirm(c *gin.Context) {
 	verificationToken := c.Param("verification_token")
 
@@ -22,11 +32,6 @@ func (h *Handler) Confirm(c *gin.Context) {
 		})
 	}
 
-	//c.JSON(http.StatusOK, responses.VerificatedUserResponse{
-	//	Status:  http.StatusOK,
-	//	Message: "user verified successfully",
-	//	//UserInfo: userInfo,
-	//})
 	c.Redirect(http.StatusFound, h.cfg.Application.FRONTEND_URL)
 
 }
